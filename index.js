@@ -68,9 +68,8 @@ function status_parse(output) {
 					return {
 						type   : type,
 						status : {
-							output : output,
-							power  : states.tv[state_num],
-							state  : parseInt(split[1]),
+							power : states.tv[state_num],
+							state : parseInt(split[1]),
 						},
 					};
 				}
@@ -81,7 +80,6 @@ function status_parse(output) {
 						status : {
 							group       : split[3],
 							mode        : parseInt(split[4]),
-							output      : output,
 							power       : states.tv[state_num],
 							progressive : (split[10] === 'progressive'),
 							ratio       : split[7],
@@ -100,8 +98,7 @@ function status_parse(output) {
 			return {
 				type   : type,
 				status : {
-					output : output,
-					power  : states.vc[state_num],
+					power : states.vc[state_num],
 				},
 			};
 		}
