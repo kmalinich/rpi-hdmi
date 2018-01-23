@@ -1,3 +1,5 @@
+/* eslint no-useless-escape : 0 */
+
 const { spawn }    = require('child_process');
 const EventEmitter = require('events');
 
@@ -27,27 +29,81 @@ let states = {
 	vc : {},
 };
 
-states.tv[0x120002] = 'off';
-states.tv[0x120006] = 'on';
 
-states.vc[0] = 'off';
-states.vc[1] = 'on';
+states.tv[0x120002] = false;
+states.tv[0x120006] = true;
+
+states.vc[0] = false;
+states.vc[1] = true;
 
 
-function status_parse(output, type) {
+// Should eventually implement data from here
+// https://github.com/raspberrypi/userland/blob/master/interface/vmcs_host/vc_hdmi.h#L468
+
+function status_parse(output) {
+	let split;
+
 	output = output.trim();
+	split  = output.split(/[\s=()\[\],@]+/);
+
+	let type;
+	switch (split[0]) {
+		case 'state' : { // tvservice output
+			type = 'tv';
+			break;
+		}
+
+		default : { // vcgencmd output
+			type = 'vc';
+		}
+	}
 
 	let state_num;
 	switch (type) {
 		case 'tv' : {
-			// Needs additional parsing
-			state_num = parseInt(output.split(' ')[1]);
-			return states.tv[state_num];
+			state_num = parseInt(split[1]);
+
+			switch (state_num) {
+				case 0x120002 : {
+					return {
+						type   : type,
+						status : {
+							output : output,
+							power  : states.tv[state_num],
+							state  : parseInt(split[1]),
+						},
+					};
+				}
+
+				default : {
+					return {
+						type   : type,
+						status : {
+							group       : split[3],
+							mode        : parseInt(split[4]),
+							output      : output,
+							power       : states.tv[state_num],
+							progressive : (split[10] === 'progressive'),
+							ratio       : split[7],
+							refreshrate : parseInt(String(split[9]).replace('Hz', '')),
+							resolution  : split[8],
+							state       : parseInt(split[1]),
+						},
+					};
+				}
+			}
 		}
 
 		case 'vc' : {
-			state_num = parseInt(output.split('=')[1]);
-			return states.vc[state_num];
+			state_num = parseInt(split[1]);
+
+			return {
+				type   : type,
+				status : {
+					output : output,
+					power  : states.vc[state_num],
+				},
+			};
 		}
 	}
 }
