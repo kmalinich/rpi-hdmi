@@ -1,0 +1,19 @@
+{
+	"name": "rpi-hdmi",
+	"version": "0.0.1",
+	"description": "ES7 class based Node.js module to query and manipulate Raspberry Pi HDMI status",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kmalinich/rpi-hdmi.git"
+	},
+	"keywords": [
+		"rpi",
+		"raspberry",
+		"raspberrypi",
+		"hdmi",
+		"node"
+	],
+	"author": "Ken Malinich <kennygprs@gmail.com>",
+	"license": "MIT"
+}
