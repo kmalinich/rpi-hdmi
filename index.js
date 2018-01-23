@@ -84,6 +84,8 @@ function status_parse(output) {
 					return {
 						type   : type,
 						status : {
+							group       : split[3],
+							mode        : parseInt(split[4]),
 							power       : states.tv[state_num],
 							progressive : (split[10] === 'progressive'),
 							ratio       : split[7],
