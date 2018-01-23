@@ -144,6 +144,10 @@ class rpi_hdmi extends EventEmitter {
 		});
 
 		this.status();
+
+		setTimeout(() => {
+			this.status();
+		}, 1000);
 	}
 }
 
