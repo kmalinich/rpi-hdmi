@@ -21,6 +21,37 @@ const cmds = {
 	},
 };
 
+// Needs additional states added
+let states = {
+	tv : {},
+	vc : {},
+};
+
+states.tv[0x120002] = 'off';
+states.tv[0x120006] = 'on';
+
+states.vc[0] = 'off';
+states.vc[1] = 'on';
+
+
+function status_parse(output, type) {
+	output = output.trim();
+
+	let state_num;
+	switch (type) {
+		case 'tv' : {
+			// Needs additional parsing
+			state_num = parseInt(output.split(' ')[1]);
+			return states.tv[state_num];
+		}
+
+		case 'vc' : {
+			state_num = parseInt(output.split('=')[1]);
+			return states.vc[state_num];
+		}
+	}
+}
+
 
 class rpi_hdmi extends EventEmitter {
 	status() {
@@ -41,7 +72,7 @@ class rpi_hdmi extends EventEmitter {
 		children.tv.on('close', (code) => {
 			this.emit('status', {
 				exit   : code,
-				status : output.tv.trim(),
+				status : status_parse(output.tv, 'tv'),
 				type   : 'tv',
 			});
 		});
@@ -53,7 +84,7 @@ class rpi_hdmi extends EventEmitter {
 		children.vc.on('close', (code) => {
 			this.emit('status', {
 				exit   : code,
-				status : output.vc.trim(),
+				status : status_parse(output.tv, 'vc'),
 				type   : 'vc',
 			});
 		});
