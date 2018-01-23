@@ -10,14 +10,14 @@ const bins = {
 
 const cmds = {
 	tv : {
-		off    : '--off',
-		on     : '--preferred',
-		status : '--status',
+		off    : [ '--off'       ],
+		on     : [ '--preferred' ],
+		status : [ '--status'    ],
 	},
 	vc : {
-		off    : 'display_power=0',
-		on     : 'display_power=1',
-		status : 'display_power',
+		off    : [ 'display_power', '0' ],
+		on     : [ 'display_power', '1' ],
+		status : [ 'display_power'      ],
 	},
 };
 
@@ -56,8 +56,8 @@ function status_parse(output, type) {
 class rpi_hdmi extends EventEmitter {
 	status() {
 		let children = {
-			tv : spawn(bins.tv, [ cmds.tv.status ]),
-			vc : spawn(bins.vc, [ cmds.vc.status ]),
+			tv : spawn(bins.tv, cmds.tv.status),
+			vc : spawn(bins.vc, cmds.vc.status),
 		};
 
 		let output = {
@@ -98,20 +98,20 @@ class rpi_hdmi extends EventEmitter {
 
 		switch (state) {
 			case true : {
-				cmd.vc = cmds.vc.on;
 				cmd.tv = cmds.tv.on;
+				cmd.vc = cmds.vc.on;
 				break;
 			}
 
 			default : {
-				cmd.vc = cmds.vc.off;
 				cmd.tv = cmds.tv.off;
+				cmd.vc = cmds.vc.off;
 			}
 		}
 
 		let children = {
-			tv : spawn(bins.tv, [ cmd.tv ]),
-			vc : spawn(bins.vc, [ cmd.vc ]),
+			tv : spawn(bins.tv, cmd.tv),
+			vc : spawn(bins.vc, cmd.vc),
 		};
 
 		let output = {
