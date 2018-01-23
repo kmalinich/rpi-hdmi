@@ -84,7 +84,7 @@ class rpi_hdmi extends EventEmitter {
 		children.vc.on('close', (code) => {
 			this.emit('status', {
 				exit   : code,
-				status : status_parse(output.tv, 'vc'),
+				status : status_parse(output.vc, 'vc'),
 				type   : 'vc',
 			});
 		});
