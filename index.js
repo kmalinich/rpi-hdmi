@@ -60,23 +60,55 @@ class rpi_hdmi extends EventEmitter {
 	}
 
 	power(state) {
-		let cmd;
+		let cmd = {
+			tv : null,
+			vc : null,
+		};
 
 		switch (state) {
-			case true : cmd = cmds.vc.on; break;
-			default   : cmd = cmds.vc.off;
+			case true : {
+				cmd.vc = cmds.vc.on;
+				cmd.tv = cmds.tv.on;
+				break;
+			}
+
+			default : {
+				cmd.vc = cmds.vc.off;
+				cmd.tv = cmds.tv.off;
+			}
 		}
 
-		let child = spawn(bins.vc, [ cmd ]);
+		let children = {
+			tv : spawn(bins.tv, [ cmd.tv ]),
+			vc : spawn(bins.vc, [ cmd.vc ]),
+		};
 
-		child.stdout.on('error', (error) => {
-			this.emit('error', error);
+		let output = {
+			tv : '',
+			vc : '',
+		};
+
+		children.tv.stdout.on('data', (data) => {
+			output.tv += data.toString();
 		});
 
-		child.on('close', (code) => {
-			this.emit('command', {
-				command : cmd.replace(/-/g, '').trim(),
-				exit    : code,
+		children.tv.on('close', (code) => {
+			this.emit('status', {
+				exit   : code,
+				status : output.tv.trim(),
+				type   : 'tv',
+			});
+		});
+
+		children.vc.stdout.on('data', (data) => {
+			output.vc += data.toString();
+		});
+
+		children.vc.on('close', (code) => {
+			this.emit('status', {
+				exit   : code,
+				status : output.vc.trim(),
+				type   : 'vc',
 			});
 		});
 
