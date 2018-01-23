@@ -17,8 +17,10 @@ hdmi.on('status', (data) => {
 	console.log(JSON.stringify(data, null, 2));
 });
 
+// Power on
 hdmi.power(true);
 
+// Power off after 3 seconds
 setTimeout(() => {
 	hdmi.power();
 }, 3000);
