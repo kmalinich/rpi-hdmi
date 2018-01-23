@@ -17,4 +17,8 @@ hdmi.on('status', (data) => {
 	console.log(JSON.stringify(data, null, 2));
 });
 
-hdmi.power();
+hdmi.power(true);
+
+setTimeout(() => {
+	hdmi.power();
+}, 3000);
