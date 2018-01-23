@@ -71,9 +71,9 @@ class rpi_hdmi extends EventEmitter {
 
 		children.tv.on('close', (code) => {
 			this.emit('status', {
-				exit   : code,
-				status : status_parse(output.tv, 'tv'),
-				type   : 'tv',
+				data : status_parse(output.tv, 'tv'),
+				exit : code,
+				type : 'tv',
 			});
 		});
 
@@ -83,9 +83,9 @@ class rpi_hdmi extends EventEmitter {
 
 		children.vc.on('close', (code) => {
 			this.emit('status', {
-				exit   : code,
-				status : status_parse(output.vc, 'vc'),
-				type   : 'vc',
+				data : status_parse(output.vc, 'vc'),
+				exit : code,
+				type : 'vc',
 			});
 		});
 	}
@@ -125,9 +125,9 @@ class rpi_hdmi extends EventEmitter {
 
 		children.tv.on('close', (code) => {
 			this.emit('command', {
-				exit   : code,
-				status : output.tv.trim(),
-				type   : 'tv',
+				data : output.tv.trim(),
+				exit : code,
+				type : 'tv',
 			});
 		});
 
@@ -137,9 +137,9 @@ class rpi_hdmi extends EventEmitter {
 
 		children.vc.on('close', (code) => {
 			this.emit('command', {
-				exit   : code,
-				status : output.vc.trim(),
-				type   : 'vc',
+				data : output.vc.trim(),
+				exit : code,
+				type : 'vc',
 			});
 		});
 
