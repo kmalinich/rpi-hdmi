@@ -124,7 +124,7 @@ class rpi_hdmi extends EventEmitter {
 		});
 
 		children.tv.on('close', (code) => {
-			this.emit('status', {
+			this.emit('command', {
 				exit   : code,
 				status : output.tv.trim(),
 				type   : 'tv',
@@ -136,7 +136,7 @@ class rpi_hdmi extends EventEmitter {
 		});
 
 		children.vc.on('close', (code) => {
-			this.emit('status', {
+			this.emit('command', {
 				exit   : code,
 				status : output.vc.trim(),
 				type   : 'vc',
