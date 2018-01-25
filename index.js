@@ -8,6 +8,10 @@ const path_vc = '/opt/vc/bin';
 const bins = {
 	tv : path_vc + '/tvservice',
 	vc : path_vc + '/vcgencmd',
+	vt : {
+		get : 'fgconsole',
+		set : 'chvt',
+	},
 };
 
 const cmds = {
