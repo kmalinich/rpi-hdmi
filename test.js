@@ -2,6 +2,7 @@
 
 let hdmi = new (require('./'))();
 
+
 hdmi.on('command', (data) => {
 	console.log('event: command');
 	console.log(JSON.stringify(data, null, 2));
@@ -19,6 +20,9 @@ hdmi.on('status', (data) => {
 	console.log(JSON.stringify(data, null, 2));
 	console.log('');
 });
+
+
+hdmi.status();
 
 // Power on
 hdmi.power(true);
