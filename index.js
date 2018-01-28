@@ -179,15 +179,11 @@ class rpi_hdmi extends EventEmitter {
 
 	power(state) {
 		let cmd = {
-			tv : null,
 			vc : null,
-			vt : null,
 		};
 
 		let output = {
-			tv : '',
 			vc : '',
-			vt : '',
 		};
 
 		let command_data = {
@@ -200,44 +196,23 @@ class rpi_hdmi extends EventEmitter {
 			},
 		};
 
-
 		switch (state) {
 			case true : {
-				cmd.tv = cmds.tv.on;
 				cmd.vc = cmds.vc.on;
 				break;
 			}
 
 			default : {
-				cmd.tv = cmds.tv.off;
 				cmd.vc = cmds.vc.off;
 			}
 		}
 
-
 		let children = {
-			tv : spawn(bins.tv, cmd.tv),
 			vc : spawn(bins.vc, cmd.vc),
 		};
 
-
-		children.tv.stdout.on('data', (data) => {
-			output.tv += data.toString();
-		});
-
 		children.vc.stdout.on('data', (data) => {
 			output.vc += data.toString();
-		});
-
-
-		children.tv.on('close', (code) => {
-			command_data.command.exit = code;
-			command_data.command.type = 'tv';
-
-			this.emit('command', command_data);
-
-			// Call this.status() to update current status
-			setTimeout(() => { this.status(); }, 250);
 		});
 
 		children.vc.on('close', (code) => {
@@ -249,23 +224,6 @@ class rpi_hdmi extends EventEmitter {
 			// Call this.status() to update current status
 			setTimeout(() => { this.status(); }, 250);
 		});
-
-
-		// Stop here if powering off
-		if (state !== true) return;
-
-		// Switch to VT1, then back to VT8 after powering on
-		spawn(bins.vt.set, [ 1 ]);
-
-		// Call this.status() to update current status
-		setTimeout(() => { this.status(); }, 250);
-
-		setTimeout(() => {
-			spawn(bins.vt.set, [ 8 ]);
-
-			// Call this.status() to update current status
-			setTimeout(() => { this.status(); }, 250);
-		}, 500);
 	}
 }
 
