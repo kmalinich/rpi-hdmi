@@ -2,23 +2,31 @@
 
 let hdmi = new (require('./'))();
 
-
 hdmi.on('command', (data) => {
-	console.log('event: command');
-	console.log(JSON.stringify(data, null, 2));
-	console.log('');
+	data = {
+		event : 'command',
+		data  : data,
+	};
+
+	console.log(JSON.stringify(data, null, 2) + '\n');
 });
 
 hdmi.on('error', (data) => {
-	console.log('event: error');
-	console.log(JSON.stringify(data, null, 2));
-	console.log('');
+	data = {
+		event : 'error',
+		data  : data,
+	};
+
+	console.log(JSON.stringify(data, null, 2) + '\n');
 });
 
 hdmi.on('status', (data) => {
-	console.log('event: status');
-	console.log(JSON.stringify(data, null, 2));
-	console.log('');
+	data = {
+		event : 'status',
+		data  : data,
+	};
+
+	console.log(JSON.stringify(data, null, 2) + '\n');
 });
 
 
@@ -26,11 +34,7 @@ hdmi.on('status', (data) => {
 hdmi.status();
 
 // Power on after 3 seconds
-setTimeout(() => {
-	hdmi.power(true);
-}, 3000);
+setTimeout(() => { hdmi.power(true); }, 3000);
 
 // Power off after 6 seconds
-setTimeout(() => {
-	hdmi.power();
-}, 6000);
+setTimeout(() => { hdmi.power(false); }, 6000);
