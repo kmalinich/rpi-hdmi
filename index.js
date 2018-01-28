@@ -44,7 +44,7 @@ states.vc[1] = true;
 // Should eventually implement data from here
 // https://github.com/raspberrypi/userland/blob/master/interface/vmcs_host/vc_hdmi.h#L468
 
-function status_parse(output) {
+function status_parse(code, output) {
 	let split;
 
 	output = output.trim();
@@ -67,85 +67,87 @@ function status_parse(output) {
 		}
 	}
 
-	let state_num;
+
+	let status_data = {
+		code   : null,
+		status : {},
+		type   : null,
+	};
+
+	let state_num = parseInt(split[1]);
+
 	switch (type) {
 		case 'tv' : {
-			state_num = parseInt(split[1]);
-
 			switch (state_num) {
 				case 0x120002 : {
-					return {
-						type   : type,
-						status : {
-							group       : null,
-							mode        : null,
-							power       : states.tv[state_num],
-							progressive : null,
-							ratio       : null,
-							refreshrate : null,
-							resolution  : null,
-							state       : parseInt(split[1]),
-						},
+					status_data.status = {
+						group       : null,
+						mode        : null,
+						power       : states.tv[state_num],
+						progressive : null,
+						ratio       : null,
+						refreshrate : null,
+						resolution  : null,
+						state       : parseInt(split[1]),
 					};
+
+					break;
 				}
 
 				default : {
-					return {
-						type   : type,
-						status : {
-							group       : split[3],
-							mode        : parseInt(split[4]),
-							power       : states.tv[state_num],
-							progressive : (split[10] === 'progressive'),
-							ratio       : split[7],
-							refreshrate : parseInt(String(split[9]).replace('Hz', '')),
-							resolution  : split[8],
-							state       : parseInt(split[1]),
-						},
+					status_data.status = {
+						group       : split[3],
+						mode        : parseInt(split[4]),
+						power       : states.tv[state_num],
+						progressive : (split[10] === 'progressive'),
+						ratio       : split[7],
+						refreshrate : parseInt(String(split[9]).replace('Hz', '')),
+						resolution  : split[8],
+						state       : parseInt(split[1]),
 					};
 				}
 			}
+
+			break;
 		}
 
 		case 'vc' : {
-			state_num = parseInt(split[1]);
-
-			return {
-				type   : type,
-				status : {
-					power : states.vc[state_num],
-				},
+			status_data.status = {
+				power : states.vc[parseInt(split[1])],
 			};
+
+			break;
 		}
 
 		case 'vt' : {
-			return {
-				type   : type,
-				status : {
-					tty : parseInt(split[0]),
-				},
+			status_data.status = {
+				tty : parseInt(split[0]),
 			};
 		}
 	}
+
+	// Add command type and command exit to event data
+	status_data.exit = code;
+	status_data.type = type;
+
+	this.emit('status', status_data);
 }
 
 
 class rpi_hdmi extends EventEmitter {
 	// Get current status from fgconsole, tvservice, vcgencmd
 	status() {
-		let children = {
-			tv : spawn(bins.tv,     cmds.tv.status),
-			vc : spawn(bins.vc,     cmds.vc.status),
-			vt : spawn(bins.vt.get, cmds.vc.status),
-		};
-
-
 		let output = {
 			tv : '',
 			vc : '',
 			vt : '',
 		};
 
+		let children = {
+			tv : spawn(bins.tv,     cmds.tv.status),
+			vc : spawn(bins.vc,     cmds.vc.status),
+			vt : spawn(bins.vt.get, cmds.vc.status),
+		};
 
 		children.tv.stdout.on('data', (data) => {
 			output.tv += data.toString();
@@ -161,30 +163,15 @@ class rpi_hdmi extends EventEmitter {
 
 
 		children.tv.on('close', (code) => {
-			let status;
-
-			status      = status_parse(output.tv);
-			status.code = code;
-
-			this.emit('status', status);
+			status_parse(code, output.tv);
 		});
 
 		children.vc.on('close', (code) => {
-			let status;
-
-			status      = status_parse(output.vc);
-			status.code = code;
-
-			this.emit('status', status);
+			status_parse(code, output.tv);
 		});
 
 		children.vt.on('close', (code) => {
-			let status;
-
-			status      = status_parse(output.vt);
-			status.code = code;
-
-			this.emit('status', status);
+			status_parse(code, output.tv);
 		});
 	}
 
@@ -192,6 +179,12 @@ class rpi_hdmi extends EventEmitter {
 		let cmd = {
 			tv : null,
 			vc : null,
+		};
+
+		let output = {
+			tv : '',
+			vc : '',
+			vt : '',
 		};
 
 
@@ -212,13 +205,6 @@ class rpi_hdmi extends EventEmitter {
 		let children = {
 			tv : spawn(bins.tv, cmd.tv),
 			vc : spawn(bins.vc, cmd.vc),
-		};
-
-
-		let output = {
-			tv : '',
-			vc : '',
-			vt : '',
 		};
 
 
