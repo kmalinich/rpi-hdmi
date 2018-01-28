@@ -181,12 +181,23 @@ class rpi_hdmi extends EventEmitter {
 		let cmd = {
 			tv : null,
 			vc : null,
+			vt : null,
 		};
 
 		let output = {
 			tv : '',
 			vc : '',
 			vt : '',
+		};
+
+		let command_data = {
+			command : {
+				exit : null,
+				type : null,
+			},
+			status : {
+				power : state,
+			},
 		};
 
 
@@ -220,32 +231,20 @@ class rpi_hdmi extends EventEmitter {
 
 
 		children.tv.on('close', (code) => {
-			this.emit('command', {
-				command : {
-					exit : code,
-					type : 'tv',
-				},
-				status : {
-					power : state,
-				},
-			});
+			command_data.command.exit = code;
+			command_data.command.type = 'tv';
+
+			this.emit('command', command_data);
 
 			// Call this.status() to update current status
-			setTimeout(() => {
-				this.status();
-			}, 250);
+			setTimeout(() => { this.status(); }, 250);
 		});
 
 		children.vc.on('close', (code) => {
-			this.emit('command', {
-				command : {
-					exit : code,
-					type : 'vc',
-				},
-				status : {
-					power : state,
-				},
-			});
+			command_data.command.exit = code;
+			command_data.command.type = 'vc';
+
+			this.emit('command', command_data);
 
 			// Call this.status() to update current status
 			setTimeout(() => { this.status(); }, 250);
