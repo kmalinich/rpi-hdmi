@@ -237,6 +237,9 @@ class rpi_hdmi extends EventEmitter {
 				exit : code,
 				type : 'tv',
 			});
+
+			// Call this.status() to update current status
+			setTimeout(this.status, 250);
 		});
 
 		children.vc.on('close', (code) => {
@@ -245,21 +248,27 @@ class rpi_hdmi extends EventEmitter {
 				exit : code,
 				type : 'vc',
 			});
+
+			// Call this.status() to update current status
+			setTimeout(this.status, 250);
 		});
 
 
+		// Stop here if powering off
+		if (state !== true) return;
+
 		// Switch to VT1, then back to VT8 after powering on
-		if (state === true) {
-			spawn(bins.vt.set, [ 1 ]);
-
-			setTimeout(() => {
-				spawn(bins.vt.set, [ 8 ]);
-			}, 500);
-		}
-
+		spawn(bins.vt.set, [ 1 ]);
 
 		// Call this.status() to update current status
-		setTimeout(this.status, 1000);
+		setTimeout(this.status, 250);
+
+		setTimeout(() => {
+			spawn(bins.vt.set, [ 8 ]);
+
+			// Call this.status() to update current status
+			setTimeout(this.status, 250);
+		}, 500);
 	}
 }
 
