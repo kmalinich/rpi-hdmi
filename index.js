@@ -85,7 +85,6 @@ function status_parse(code, output) {
 					status_data.status = {
 						group       : null,
 						mode        : null,
-						power       : states.tv[state_num],
 						progressive : null,
 						ratio       : null,
 						refreshrate : null,
@@ -100,7 +99,6 @@ function status_parse(code, output) {
 					status_data.status = {
 						group       : split[3],
 						mode        : parseInt(split[4]),
-						power       : states.tv[state_num],
 						progressive : (split[10] === 'progressive'),
 						ratio       : split[7],
 						refreshrate : parseInt(String(split[9]).replace('Hz', '')),
