@@ -69,9 +69,11 @@ function status_parse(code, output) {
 
 
 	let status_data = {
-		exit   : null,
+		command : {
+			exit : null,
+			type : null,
+		},
 		status : {},
-		type   : null,
 	};
 
 	let state_num = parseInt(split[1]);
@@ -127,8 +129,8 @@ function status_parse(code, output) {
 	}
 
 	// Add command type and command exit to event data
-	status_data.exit = code;
-	status_data.type = type;
+	status_data.command.exit = code;
+	status_data.command.type = type;
 
 	return status_data;
 }
@@ -219,9 +221,13 @@ class rpi_hdmi extends EventEmitter {
 
 		children.tv.on('close', (code) => {
 			this.emit('command', {
-				exit  : code,
-				power : state,
-				type  : 'tv',
+				command : {
+					exit : code,
+					type : 'tv',
+				},
+				status : {
+					power : state,
+				},
 			});
 
 			// Call this.status() to update current status
@@ -232,9 +238,13 @@ class rpi_hdmi extends EventEmitter {
 
 		children.vc.on('close', (code) => {
 			this.emit('command', {
-				exit  : code,
-				power : state,
-				type  : 'vc',
+				command : {
+					exit : code,
+					type : 'vc',
+				},
+				status : {
+					power : state,
+				},
 			});
 
 			// Call this.status() to update current status
