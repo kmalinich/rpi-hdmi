@@ -130,7 +130,7 @@ function status_parse(code, output) {
 	status_data.exit = code;
 	status_data.type = type;
 
-	this.emit('status', status_data);
+	return status_data;
 }
 
 
@@ -163,15 +163,15 @@ class rpi_hdmi extends EventEmitter {
 
 
 		children.tv.on('close', (code) => {
-			status_parse(code, output.tv);
+			this.emit('status', status_parse(code, output.tv));
 		});
 
 		children.vc.on('close', (code) => {
-			status_parse(code, output.tv);
+			this.emit('status', status_parse(code, output.vc));
 		});
 
 		children.vt.on('close', (code) => {
-			status_parse(code, output.tv);
+			this.emit('status', status_parse(code, output.vt));
 		});
 	}
 
