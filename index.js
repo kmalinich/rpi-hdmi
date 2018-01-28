@@ -225,7 +225,9 @@ class rpi_hdmi extends EventEmitter {
 			});
 
 			// Call this.status() to update current status
-			setTimeout(this.status, 250);
+			setTimeout(() => {
+				this.status();
+			}, 250);
 		});
 
 		children.vc.on('close', (code) => {
@@ -236,7 +238,7 @@ class rpi_hdmi extends EventEmitter {
 			});
 
 			// Call this.status() to update current status
-			setTimeout(this.status, 250);
+			setTimeout(() => { this.status(); }, 250);
 		});
 
 
@@ -247,13 +249,13 @@ class rpi_hdmi extends EventEmitter {
 		spawn(bins.vt.set, [ 1 ]);
 
 		// Call this.status() to update current status
-		setTimeout(this.status, 250);
+		setTimeout(() => { this.status(); }, 250);
 
 		setTimeout(() => {
 			spawn(bins.vt.set, [ 8 ]);
 
 			// Call this.status() to update current status
-			setTimeout(this.status, 250);
+			setTimeout(() => { this.status(); }, 250);
 		}, 500);
 	}
 }
