@@ -22,12 +22,15 @@ hdmi.on('status', (data) => {
 });
 
 
+// Get status
 hdmi.status();
 
-// Power on
-hdmi.power(true);
+// Power on after 3 seconds
+setTimeout(() => {
+	hdmi.power(true);
+}, 3000);
 
-// Power off after 3 seconds
+// Power off after 6 seconds
 setTimeout(() => {
 	hdmi.power();
-}, 5000);
+}, 6000);
