@@ -69,7 +69,7 @@ function status_parse(code, output) {
 
 
 	let status_data = {
-		code   : null,
+		exit   : null,
 		status : {},
 		type   : null,
 	};
